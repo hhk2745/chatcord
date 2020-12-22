@@ -23,6 +23,12 @@ function userLeave(id) {
   }
 }
 
+// User leaves chat
+function bomb(room) {
+  return users.filter(user => user.room !== room);
+}
+
+
 // Get room users
 function getRoomUsers(room) {
   return users.filter(user => user.room === room);
@@ -32,5 +38,6 @@ module.exports = {
   userJoin,
   getCurrentUser,
   userLeave,
-  getRoomUsers
+  getRoomUsers,
+  bomb
 };
