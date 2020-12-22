@@ -21,11 +21,17 @@ socket.on('roomUsers', ({ room, users }) => {
 
 // Message from server
 socket.on('message', message => {
-  console.log(message);
+  console.log(socket, message);
   outputMessage(message);
 
   // Scroll down
   chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+// 방 나가기
+socket.on('leave',  (sec)=> {
+  setTimeout(()=>{
+    location.href = "/";
+  }, sec)
 });
 
 // Message submit

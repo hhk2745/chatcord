@@ -7,7 +7,8 @@ const {
   userJoin,
   getCurrentUser,
   userLeave,
-  getRoomUsers
+  getRoomUsers,
+  bomb
 } = require('./utils/users');
 
 const app = express();
@@ -18,10 +19,12 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 const botName = 'ChatCord Bot';
+const adminName = 'Admin';
 
 // Run when client connects
 io.on('connection', socket => {
   socket.on('joinRoom', ({ username, room }) => {
+    console.log('joinRoom ... ', username, room)
     const user = userJoin(socket.id, username, room);
 
     socket.join(user.room);
@@ -52,7 +55,8 @@ io.on('connection', socket => {
   });
 
   // Runs when client disconnects
-  socket.on('disconnect', () => {
+  socket.on('disconnect', (target) => {
+    console.log('disconnect target ... ', target);
     const user = userLeave(socket.id);
 
     if (user) {
@@ -68,6 +72,19 @@ io.on('connection', socket => {
       });
     }
   });
+  socket.on('bomb', (room) => {
+    const ms = 3000;
+    io.to(room).emit('leave', ms);
+
+    io.to(room).emit(
+        'message',
+        formatMessage(adminName, `방이 폭파되었습니다. ${ms/1000} 초 뒤에 방이 폭파합니다.`)
+    );
+
+
+    // location.href="/"
+  });
+
 });
 
 const PORT = process.env.PORT || 3000;
