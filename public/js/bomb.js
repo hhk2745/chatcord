@@ -1,4 +1,3 @@
-
 const bomb = document.getElementById('bomb');
 const room = document.getElementById('room');
 
@@ -8,5 +7,3 @@ bomb.addEventListener("click", ()=>{
   // Join chatroom
   socket.emit('bomb', room.value);
 })
-
-

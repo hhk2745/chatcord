@@ -3,12 +3,22 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
+const mysql = require('mysql2');
+const connection = mysql.createConnection({
+  host: '112.164.10.150',
+  user: 'test',
+  password: 'Inforex$567890',
+  database: 'mango',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
+
 const {
   userJoin,
   getCurrentUser,
   userLeave,
   getRoomUsers,
-  bomb
 } = require('./utils/users');
 
 const app = express();
@@ -80,9 +90,41 @@ io.on('connection', socket => {
         'message',
         formatMessage(adminName, `방이 폭파되었습니다. ${ms/1000} 초 뒤에 방이 폭파합니다.`)
     );
+  });
 
+  socket.on('login', (loginId) => {
+    console.log(' on login ', connection);
+    // db 조회
 
-    // location.href="/"
+    connection.execute(
+        'SELECT * FROM member_simple where login_id = ?'
+        , [loginId]
+        ,function(err, results, fields) {
+          if(results.length < 1){
+
+          }
+          console.log(loginId, results); // results contains rows returned by server
+        }
+    );
+
+    // connection.execute(
+    //     'SELECT * FROM `member_simple` WHERE `login_id` = ?',
+    //     [loginId],
+    //     function(err, results, fields) {
+    //       console.log(`err ... `, err);
+    //       console.log(loginId, results); // results contains rows returned by server
+    //       // console.log(fields); // fields contains extra meta data about results, if available
+    //
+    //       // If you execute same statement again, it will be picked from a LRU cache
+    //       // which will save query preparation time and give better performance
+    //     }
+    // );
+
+    if( true ){
+      // emit joinRoom
+    } else {
+      console.log('존재하지 않는 ID')
+    }
   });
 
 });
